@@ -30,7 +30,8 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:onClick="doLogin"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

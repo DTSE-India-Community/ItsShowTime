@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.huawei.agconnect.AGConnectInstance;
 import com.huawei.agconnect.auth.AGConnectAuth;
 import com.huawei.agconnect.auth.AGConnectAuthCredential;
 import com.huawei.agconnect.auth.AGConnectUser;
@@ -30,6 +31,8 @@ import com.huawei.ist.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SplashActivty extends AppCompatActivity {
 
@@ -40,38 +43,61 @@ public class SplashActivty extends AppCompatActivity {
     private HuaweiIdAuthService mHuaweiIdAuthService;
     private HuaweiIdAuthParams mHuaweiIdAuthParams;
     private AGConnectAuth mAuth;
+    private TimerTask timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        AGConnectInstance.initialize(this);
         mProgressBar = findViewById(R.id.progressBar);
         mLoginButton = findViewById(R.id.btnLogin);
-        init();
+        mUser = AGConnectAuth.getInstance().getCurrentUser();
+        timer = new TimerTask() {
+            @Override
+            public void run() {
+                if (mUser!=null){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressBar.setVisibility(View.INVISIBLE);
+                            Intent intent = new Intent(SplashActivty.this,MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    });
+
+
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mLoginButton.setVisibility(View.VISIBLE);
+                            mProgressBar.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                }
+            }
+        };
+
+
+
+
+//        init();
+    }
+    public void doLogin(View view){
+       idTokenSignIn();
     }
 
-    private void init() {
-        mUser = AGConnectAuth.getInstance().getCurrentUser();
+    private void idTokenSignIn() {
+
         mHuaweiIdAuthParams = new HuaweiIdAuthParamsHelper(HuaweiIdAuthParams.DEFAULT_AUTH_REQUEST_PARAM)
                 .setIdToken()
                 .setAccessToken()
                 .createParams();
         mHuaweiIdAuthService = HuaweiIdAuthManager.getService(SplashActivty.this, mHuaweiIdAuthParams);
-        if (mUser!=null){
-            Intent intent = new Intent(this,MainActivity.class);
-            startActivity(intent);
-            mProgressBar.setVisibility(View.INVISIBLE);
-        }else {
-            mLoginButton.setVisibility(View.VISIBLE);
-            mProgressBar.setVisibility(View.INVISIBLE);
-            mLoginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivityForResult(mHuaweiIdAuthService.getSignInIntent(), SIGN_CODE);
-                }
-            });
-
-        }
+        startActivityForResult(mHuaweiIdAuthService.getSignInIntent(), SIGN_CODE);
 
     }
     @Override
@@ -86,7 +112,10 @@ public class SplashActivty extends AppCompatActivity {
                 mAuth.signIn(credential).addOnSuccessListener(new OnSuccessListener<SignInResult>() {
                     @Override
                     public void onSuccess(SignInResult signInResult) {
-
+                            mUser = AGConnectAuth.getInstance().getCurrentUser();
+                        Intent intent = new Intent(SplashActivty.this,MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 });
             } else {
