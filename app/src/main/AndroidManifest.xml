@@ -9,9 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity"></activity>
-        <activity android:name=".activity.MovieListActivity"
-            android:screenOrientation="sensorPortrait">
+        <activity android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.SplashActivty">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
