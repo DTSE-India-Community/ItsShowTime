@@ -8,7 +8,7 @@
     >
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/txtWelcomMsg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/txtWelcomMsg"
         android:visibility="visible"
         android:onClick="doLogin"/>
 
@@ -52,7 +52,7 @@
         android:layout_marginStart="118dp"
         android:layout_marginTop="150dp"
         android:layout_marginEnd="118dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/txtWelcomMsg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
