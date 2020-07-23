@@ -7,9 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.huawei.agconnect.AGConnectInstance;
 import com.huawei.agconnect.auth.AGConnectAuth;
@@ -20,17 +21,14 @@ import com.huawei.agconnect.auth.SignInResult;
 import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hmf.tasks.Task;
 import com.huawei.hms.common.ApiException;
-import com.huawei.hms.support.api.entity.auth.Scope;
-import com.huawei.hms.support.api.entity.hwid.HwIDConstant;
 import com.huawei.hms.support.hwid.HuaweiIdAuthManager;
 import com.huawei.hms.support.hwid.request.HuaweiIdAuthParams;
 import com.huawei.hms.support.hwid.request.HuaweiIdAuthParamsHelper;
 import com.huawei.hms.support.hwid.result.AuthHuaweiId;
 import com.huawei.hms.support.hwid.service.HuaweiIdAuthService;
 import com.huawei.ist.R;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.huawei.ist.utility.Constant;
+import com.huawei.ist.utility.SharedPreferenceHelper;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -42,15 +40,17 @@ public class SplashActivty extends AppCompatActivity {
     private static final int SIGN_CODE = 1002;
     private HuaweiIdAuthService mHuaweiIdAuthService;
     private HuaweiIdAuthParams mHuaweiIdAuthParams;
-    private AGConnectAuth mAuth;
     private TimerTask timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         AGConnectInstance.initialize(this);
         mProgressBar = findViewById(R.id.progressBar);
+        TextView textView = findViewById(R.id.textView);
+        textView.setTypeface(Constant.getTypeface(this,1));
         mLoginButton = findViewById(R.id.btnLogin);
         mUser = AGConnectAuth.getInstance().getCurrentUser();
         Timer RunSplash = new Timer();
@@ -67,8 +67,6 @@ public class SplashActivty extends AppCompatActivity {
                             finish();
                         }
                     });
-
-
                 }else {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -77,20 +75,16 @@ public class SplashActivty extends AppCompatActivity {
                             mProgressBar.setVisibility(View.INVISIBLE);
                         }
                     });
-
                 }
             }
         };
         RunSplash.schedule(timer, 300);
-
-//        init();
     }
     public void doLogin(View view){
        idTokenSignIn();
     }
 
     private void idTokenSignIn() {
-
         mHuaweiIdAuthParams = new HuaweiIdAuthParamsHelper(HuaweiIdAuthParams.DEFAULT_AUTH_REQUEST_PARAM)
                 .setIdToken()
                 .setAccessToken()
@@ -112,7 +106,7 @@ public class SplashActivty extends AppCompatActivity {
                     @Override
                     public void onSuccess(SignInResult signInResult) {
                         mUser = AGConnectAuth.getInstance().getCurrentUser();
-                        //sharedprefrence
+                        SharedPreferenceHelper.setSharedPreferenceObject(SplashActivty.this,"userDetails",mUser);
                         Intent intent = new Intent(SplashActivty.this,MovieListActivity.class);
                         startActivity(intent);
                         finish();
