@@ -53,6 +53,7 @@ public class SplashActivty extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progressBar);
         mLoginButton = findViewById(R.id.btnLogin);
         mUser = AGConnectAuth.getInstance().getCurrentUser();
+        Timer RunSplash = new Timer();
         timer = new TimerTask() {
             @Override
             public void run() {
@@ -61,7 +62,7 @@ public class SplashActivty extends AppCompatActivity {
                         @Override
                         public void run() {
                             mProgressBar.setVisibility(View.INVISIBLE);
-                            Intent intent = new Intent(SplashActivty.this,MainActivity.class);
+                            Intent intent = new Intent(SplashActivty.this,MovieListActivity.class);
                             startActivity(intent);
                             finish();
                         }
@@ -80,9 +81,7 @@ public class SplashActivty extends AppCompatActivity {
                 }
             }
         };
-
-
-
+        RunSplash.schedule(timer, 300);
 
 //        init();
     }
@@ -109,11 +108,12 @@ public class SplashActivty extends AppCompatActivity {
                 AuthHuaweiId huaweiAccount = authHuaweiIdTask.getResult();
                 Log.i("TAG", "accessToken:" + huaweiAccount.getAccessToken());
                 AGConnectAuthCredential credential = HwIdAuthProvider.credentialWithToken(huaweiAccount.getAccessToken());
-                mAuth.signIn(credential).addOnSuccessListener(new OnSuccessListener<SignInResult>() {
+                AGConnectAuth.getInstance().signIn(credential).addOnSuccessListener(new OnSuccessListener<SignInResult>() {
                     @Override
                     public void onSuccess(SignInResult signInResult) {
-                            mUser = AGConnectAuth.getInstance().getCurrentUser();
-                        Intent intent = new Intent(SplashActivty.this,MainActivity.class);
+                        mUser = AGConnectAuth.getInstance().getCurrentUser();
+                        //sharedprefrence
+                        Intent intent = new Intent(SplashActivty.this,MovieListActivity.class);
                         startActivity(intent);
                         finish();
                     }
