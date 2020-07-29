@@ -19,8 +19,6 @@ package com.huawei.ist.utility;
 import android.util.Base64;
 
 import com.alibaba.fastjson.JSONObject;
-import com.huawei.agconnect.config.impl.Hex;
-
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPOutputStream;
