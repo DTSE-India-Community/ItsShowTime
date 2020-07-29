@@ -206,7 +206,7 @@ public class MovieListActivity extends AppCompatActivity {
 
     private void gettheaterList(){
         try {
-            searchService = SearchServiceFactory.create(this, URLEncoder.encode(Constant.API_KEY, "utf-8"));
+            searchService = SearchServiceFactory.create(this, URLEncoder.encode("***************", "utf-8"));
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "encode apikey error");
         }
