@@ -8,14 +8,24 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.TheaterActivity"></activity>
-        <activity android:name=".activity.MovieListActivity" />
-        <activity android:name=".activity.SplashActivty">
+        <activity android:name=".activity.SeatActivity"
+            android:screenOrientation="sensorPortrait"></activity>
+        <activity android:name=".activity.MainActivity"
+            android:screenOrientation="sensorPortrait"></activity>
+        <activity
+            android:name=".activity.TheaterActivity"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name=".activity.MovieListActivity"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name=".activity.SplashActivty"
+            android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

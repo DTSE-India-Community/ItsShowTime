@@ -7,6 +7,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,12 +34,24 @@ import com.huawei.hms.location.HWLocation;
 import com.huawei.hms.location.LocationRequest;
 import com.huawei.hms.location.LocationServices;
 import com.huawei.hms.location.SettingsClient;
+import com.huawei.hms.site.api.SearchResultListener;
+import com.huawei.hms.site.api.SearchService;
+import com.huawei.hms.site.api.SearchServiceFactory;
+import com.huawei.hms.site.api.model.Coordinate;
+import com.huawei.hms.site.api.model.QuerySuggestionRequest;
+import com.huawei.hms.site.api.model.QuerySuggestionResponse;
+import com.huawei.hms.site.api.model.SearchStatus;
+import com.huawei.hms.site.api.model.Site;
 import com.huawei.ist.R;
+import com.huawei.ist.utility.Constant;
 import com.huawei.ist.utility.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,19 +72,26 @@ public class MovieListActivity extends AppCompatActivity {
     private String movie_cast = "cast";
     private List<HashMap<String, Object>> movieFinalList = new ArrayList<HashMap<String, Object>>();
     private ListView listView;
+    private static final String TAG = "TheaterActivity";
+    private SearchService searchService;
+    private List<String> theaterNameList = new ArrayList<>();
+    private double lat,lon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_movie_list);
+        theaterNameList.clear();
         txtHeader = findViewById(R.id.txtHeader);
+        txtHeader.setTypeface(Constant.getTypeface(this,1));
         txtHeader.setText("MOVIES");
         listView = (ListView) findViewById(R.id.listviewMovies);
         txtWelcomMsg = (TextView)findViewById(R.id.txtWelcomMsg);
         txtWelcomMsg.setSelected(true);
         setCity();
         showMovieList();
+        gettheaterList();
     }
 
     private void setCity(){
@@ -87,6 +107,8 @@ public class MovieListActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(HWLocation hwLocation) {
                         System.out.println("CITY >>> " + hwLocation.getCity());
+                        lat = hwLocation.getLatitude();
+                        lon = hwLocation.getLongitude();
                         txtWelcomMsg.setText("You are right now in " +hwLocation.getCity()+ " location. Grab a pop corn and book a movie because It's Show Time.");
                     }
                 })
@@ -172,11 +194,64 @@ public class MovieListActivity extends AppCompatActivity {
                 String movieCast = (String) v.getTag(R.id.txtCasts);
                 String moviePoster = (String) v.getTag(R.id.poster);
                 System.out.println("Movie Name >>>" + movieName);
-
-                
-
+                Intent intent = new Intent(MovieListActivity.this, TheaterActivity.class);
+                Bundle args = new Bundle();
+                args.putSerializable("ARRAYLIST",(Serializable) theaterNameList);
+                intent.putExtra("BUNDLE",args);
+                startActivity(intent);
 
             }
         };
     }
+
+    private void gettheaterList(){
+        try {
+            searchService = SearchServiceFactory.create(this, URLEncoder.encode(Constant.API_KEY, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            Log.e(TAG, "encode apikey error");
+        }
+        Coordinate location = new Coordinate(lat, lon);
+        QuerySuggestionRequest request = new QuerySuggestionRequest();
+        request.setQuery("Movie theater");
+        request.setLocation(location);
+        request.setRadius(50);
+        request.setCountryCode("IN");
+        request.setLanguage("en");
+
+        QuerySuggestionRequest request2 = new QuerySuggestionRequest();
+        request2.setQuery("PVR cinemas");
+        request2.setLocation(location);
+        request2.setRadius(50);
+        request2.setCountryCode("IN");
+        request2.setLanguage("en");
+
+        QuerySuggestionRequest request3 = new QuerySuggestionRequest();
+        request3.setQuery("INOX Movies");
+        request3.setLocation(location);
+        request3.setRadius(50);
+        request3.setCountryCode("IN");
+        request3.setLanguage("en");
+
+        SearchResultListener<QuerySuggestionResponse> resultListener = new SearchResultListener<QuerySuggestionResponse>() {
+            @Override
+            public void onSearchResult(QuerySuggestionResponse results) {
+                if (results == null) {
+                    return;
+                }
+                List<Site> sites = results.getSites();
+                for (Site site : sites) {
+                    theaterNameList.add(site.getName());
+                }
+
+            }
+            @Override
+            public void onSearchError(SearchStatus status) {
+                Log.i("TAG", "Error : " + status.getErrorCode() + " " + status.getErrorMessage());
+            }
+        };
+        searchService.querySuggestion(request, resultListener);
+        searchService.querySuggestion(request2, resultListener);
+        searchService.querySuggestion(request3, resultListener);
+    }
+
 }
