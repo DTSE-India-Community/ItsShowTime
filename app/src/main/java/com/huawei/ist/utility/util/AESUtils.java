@@ -1,4 +1,4 @@
-/*
+package com.huawei.ist.utility.util;/*
  * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
    limitations under the License.
  */
 
-package com.huawei.ist.utility;
 
 
 import java.nio.charset.StandardCharsets;

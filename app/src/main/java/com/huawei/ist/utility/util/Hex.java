@@ -1,6 +1,7 @@
-package com.huawei.ist.utility;
+package com.huawei.ist.utility.util;
 
 public class Hex {
+    private static final char[] hexCode="0123456789ABCDEF".toCharArray();
     public static String encodeHexString(byte[] data) {
         StringBuilder sb = new StringBuilder(data.length * 2);
         byte[] var2 = data;

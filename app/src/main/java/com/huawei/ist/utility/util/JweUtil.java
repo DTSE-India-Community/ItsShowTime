@@ -1,4 +1,4 @@
-/*
+package com.huawei.ist.utility.util;/*
  * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +14,13 @@
  *    limitations under the License.
  */
 
-package com.huawei.ist.utility;
+
 
 import android.util.Base64;
 
 import com.alibaba.fastjson.JSONObject;
+import com.huawei.ist.utility.Constant;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPOutputStream;
@@ -37,8 +39,8 @@ public class JweUtil {
      * @return return a map containing a content string and a signature string.
      */
     public static String generateJwe(String issuerId, String dataJson) {
-        String jwePrivateKey = "Private Key need to replace";
-        String sessionKeyPublicKey = "Public key need to replace";
+        String jwePrivateKey = Constant.PRIVATE_KEY;
+        String sessionKeyPublicKey = Constant.PUBLIC_KEY;
         String sessionKey = RandomUtils.generateSecureRandomFactor(16);
         JSONObject jsonObject = JSONObject.parseObject(dataJson);
         jsonObject.put("iss", issuerId);

@@ -1,4 +1,4 @@
-/*
+package com.huawei.ist.utility.util;/*
  * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +14,24 @@
    limitations under the License.
  */
 
-package com.huawei.ist.utility;
+import java.security.SecureRandom;
 
-
-
-public class RandomUtils {
-    private RandomUtils() {
+public final class CommCryptUtil {
+    public CommCryptUtil() {
     }
 
-    public static byte[] generateSecureRandomByte(int byteSize) {
-        return CommCryptUtil.genSecureRandomByte(byteSize);
+    public static String byte2HexStr(byte[] array) {
+        return array == null ? null : new String(HwHex.encodeHex(array, false));
     }
 
-    public static String generateSecureRandomFactor(int size) {
-        byte[] factor = generateSecureRandomByte(size);
-        return HwHex.encodeHexString(factor);
+    public static byte[] hexStr2Byte(String hexStr) throws Exception {
+        return hexStr == null ? new byte[0] : HwHex.decodeHex(hexStr.toCharArray());
+    }
+
+    public static byte[] genSecureRandomByte(int byteSize) {
+        SecureRandom sr = new SecureRandom();
+        byte[] bytes = new byte[byteSize];
+        sr.nextBytes(bytes);
+        return bytes;
     }
 }

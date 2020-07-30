@@ -13,10 +13,13 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.SeatActivity"
-            android:screenOrientation="sensorPortrait"></activity>
-        <activity android:name=".activity.MainActivity"
-            android:screenOrientation="sensorPortrait"></activity>
+        <activity android:name=".activity.PaymentActivity"/>
+        <activity
+            android:name=".activity.SeatActivity"
+            android:screenOrientation="sensorPortrait" />
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="sensorPortrait" />
         <activity
             android:name=".activity.TheaterActivity"
             android:screenOrientation="sensorPortrait" />

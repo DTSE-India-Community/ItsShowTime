@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,23 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.huawei.hms.site.api.SearchResultListener;
-import com.huawei.hms.site.api.SearchService;
-import com.huawei.hms.site.api.SearchServiceFactory;
-import com.huawei.hms.site.api.model.Coordinate;
-import com.huawei.hms.site.api.model.CoordinateBounds;
-import com.huawei.hms.site.api.model.QuerySuggestionRequest;
-import com.huawei.hms.site.api.model.QuerySuggestionResponse;
-import com.huawei.hms.site.api.model.SearchStatus;
-import com.huawei.hms.site.api.model.Site;
 import com.huawei.ist.R;
 import com.huawei.ist.adapter.MovieTheaterAdapter;
 import com.huawei.ist.utility.Constant;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TheaterActivity extends AppCompatActivity {
 

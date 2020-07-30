@@ -36,9 +36,6 @@ import com.huawei.hms.support.hwid.service.HuaweiIdAuthService;
 import com.huawei.ist.R;
 import com.huawei.ist.utility.Constant;
 import com.huawei.ist.utility.SharedPreferenceHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 

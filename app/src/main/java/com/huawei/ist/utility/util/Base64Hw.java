@@ -1,4 +1,4 @@
-/*
+package com.huawei.ist.utility.util;/*
  * Copyright 2020. Huawei Technologies Co., Ltd. All rights reserved.
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,23 +14,8 @@
    limitations under the License.
  */
 
-package com.huawei.ist.utility;
 
-
-import android.util.Base64;
-import android.util.Log;
-
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-
-import javax.crypto.Cipher;
-
-public class RSA {
-
+public final class Base64Hw {
     private static final int BASELENGTH = 128;
 
     private static final int LOOKUPLENGTH = 64;
@@ -51,113 +36,58 @@ public class RSA {
 
     private static final char[] LOOK_UP_BASE64_ALPHABET = new char[LOOKUPLENGTH];
 
-    /**
-     * Signature algorithm.
-     */
-    private static final String SIGN_ALGORITHMS256 = "SHA256WithRSA";
+    static {
+        for (int idx = 0; idx < BASELENGTH; ++idx) {
+            BASE64_ALPHABET[idx] = -1;
+        }
+        for (int idx = 'Z'; idx >= 'A'; idx--) {
+            BASE64_ALPHABET[idx] = (byte) (idx - 'A');
+        }
+        for (int idx = 'z'; idx >= 'a'; idx--) {
+            BASE64_ALPHABET[idx] = (byte) (idx - 'a' + 26);
+        }
 
-    private static final String RSA_ECB_OAEP_SHA256_ALGORITHM = "RSA/ECB/OAEPwithSHA-256andMGF1Padding";
+        for (int idx = '9'; idx >= '0'; idx--) {
+            BASE64_ALPHABET[idx] = (byte) (idx - '0' + 52);
+        }
+
+        BASE64_ALPHABET['+'] = 62;
+        BASE64_ALPHABET['/'] = 63;
+
+        for (int i = 0; i <= 25; i++) {
+            LOOK_UP_BASE64_ALPHABET[i] = (char) ('A' + i);
+        }
+
+        for (int i = 26, j = 0; i <= 51; i++, j++) {
+            LOOK_UP_BASE64_ALPHABET[i] = (char) ('a' + j);
+        }
+
+        for (int i = 52, j = 0; i <= 61; i++, j++) {
+            LOOK_UP_BASE64_ALPHABET[i] = (char) ('0' + j);
+        }
+        LOOK_UP_BASE64_ALPHABET[62] = '+';
+        LOOK_UP_BASE64_ALPHABET[63] = '/';
+    }
+
+    private static boolean isWhiteSpace(char octect) {
+        return (octect == 0x20 || octect == 0xd || octect == 0xa || octect == 0x9);
+    }
+
+    private static boolean isPad(char octect) {
+        return (octect == PAD);
+    }
+
+    private static boolean isData(char octect) {
+        return (octect < BASELENGTH && BASE64_ALPHABET[octect] != -1);
+    }
 
     /**
-     * Sign content.
+     * Encodes hex octects into Base64Hw
      *
-     * @param content data to be signed.
-     * @param privateKey merchant's private key.
-     * @return Signed value.
+     * @param binaryData Array containing binaryData
+     * @return Encoded Base64Hw array
      */
-    public static String sign(String content, String privateKey, String signType) {
-        String charset = "utf-8";
-        try {
-            PKCS8EncodedKeySpec privatePKCS8 = new PKCS8EncodedKeySpec(Base64.decode(privateKey, Base64.DEFAULT));
-            KeyFactory keyf = KeyFactory.getInstance("RSA");
-            PrivateKey priKey = keyf.generatePrivate(privatePKCS8);
-            java.security.Signature signatureObj = java.security.Signature.getInstance(SIGN_ALGORITHMS256);
-            signatureObj.initSign(priKey);
-            signatureObj.update(content.getBytes(charset));
-            byte[] signed = signatureObj.sign();
-            return Base64.encodeToString(signed, Base64.DEFAULT);
-        } catch (Exception ex) {
-            Log.i("RSA", "SIGN Fail");
-        }
-
-        return "";
-    }
-
-    /**
-     * Verify signature.
-     *
-     * @param content content to be signed.
-     * @param sign the signature to verified.
-     * @param publicKey public key.
-     * @param signType sign type.
-     * @return if verifying signature succeed.
-     */
-    public static boolean doCheck(byte[] content, String sign, String publicKey, String signType) {
-        try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            byte[] encodedKey = Base64.decode(publicKey, Base64.DEFAULT);
-            PublicKey pubKey = keyFactory.generatePublic(new X509EncodedKeySpec(encodedKey));
-            java.security.Signature signature = java.security.Signature.getInstance(SIGN_ALGORITHMS256);
-            signature.initVerify(pubKey);
-            signature.update(content);
-            return signature.verify(Base64.decode(sign, Base64.DEFAULT));
-        } catch (Exception e) {
-            Log.i("RSA", "doCheck Fail");
-        }
-        return false;
-    }
-
-    public static String encrypt(String source, String publicKey) throws Exception {
-        return encrypt(source, publicKey, RSA.RSA_ECB_OAEP_SHA256_ALGORITHM, "utf-8");
-    }
-
-    public static String encrypt(String source, String publicKey, String algorithm, String input_charset)
-            throws Exception {
-        Key key = getPublicKey(publicKey);
-        Cipher cipher = Cipher.getInstance(algorithm);
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        if (CommonUtil.isNull(input_charset)) {
-            input_charset = "utf-8";
-        }
-        byte[] bytes = hex2Byte(source);
-        byte[] b1 = cipher.doFinal(bytes);
-        String encoded = Base64encode(b1);
-        return encoded;
-    }
-
-    /**
-     * encrypt bytes： src data
-     *
-     * @param bytes bytes
-     * @param publicKey publicKey
-     * @param algorithm algorithm
-     * @param input_charset input_charset
-     * @return encoded
-     * @throws Exception
-     */
-    public static String encrypt(byte[] bytes, String publicKey, String algorithm, String input_charset)
-            throws Exception {
-        Key key = getPublicKey(publicKey);
-        Cipher cipher = Cipher.getInstance(algorithm);
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        if (CommonUtil.isNull(input_charset)) {
-            input_charset = "utf-8";
-        }
-        byte[] b1 = cipher.doFinal(bytes);
-        String encoded = Base64Hw.encode(b1);
-        return encoded;
-    }
-
-
-    public static byte[] hex2Byte(String hex) throws Exception {
-        return hexStr2Byte(hex);
-    }
-
-    public static byte[] hexStr2Byte(String hexStr) throws Exception {
-        return hexStr == null ? new byte[0] : HwHex.decodeHex(hexStr.toCharArray());
-    }
-
-    public static String Base64encode(byte[] binaryData) {
+    public static String encode(byte[] binaryData) {
         if (CommonUtil.isNull(binaryData)) {
             return null;
         }
@@ -208,7 +138,7 @@ public class RSA {
     }
 
     private static void assembleInteger(byte[] binaryData, int fewerThan24bits, char[] encodedData, int encodedIndex,
-            int dataIndex) {
+        int dataIndex) {
         byte b1;
         byte k1;
         byte b2;
@@ -241,52 +171,79 @@ public class RSA {
     }
 
     /**
-     * getPublicKey
+     * Decodes Base64Hw data into octects
      *
-     * @param key key(by Base64)
-     * @throws Exception
+     * @param encoded string containing Base64Hw data
+     * @return Array containind decoded data.
      */
-    private static PublicKey getPublicKey(String key) throws Exception {
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64Hw.decode(key));
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PublicKey publicKey = keyFactory.generatePublic(keySpec);
-        return publicKey;
-    }
-
-
-    /**
-     * remove WhiteSpace from MIME containing encoded Base64Hw data.
-     *
-     * @param data the byte array of base64 data (with WS)
-     * @return the new length
-     */
-    private static int removeWhiteSpace(char[] data) {
-        if (CommonUtil.isNull(data)) {
-            return 0;
+    public static byte[] decode(String encoded) {
+        if (CommonUtil.isNull(encoded)) {
+            // if (encoded == null)
+            return new byte[0];
         }
 
-        // count characters that's not whitespace
-        int newSize = 0;
-        int len = data.length;
-        for (int i = 0; i < len; i++) {
-            if (!isWhiteSpace(data[i])) {
-                data[newSize++] = data[i];
-            }
+        char[] base64Data = encoded.toCharArray();
+        // remove white spaces
+        int len = removeWhiteSpace(base64Data);
+
+        if (len % FOURBYTE != 0) {
+            return new byte[0];// should be divisible by four
         }
-        return newSize;
+
+        int numberQuadruple = (len / FOURBYTE);
+
+        if (numberQuadruple == 0) {
+            return new byte[0];
+        }
+
+        return decode(base64Data, numberQuadruple);
     }
 
-    private static boolean isWhiteSpace(char octect) {
-        return (octect == 0x20 || octect == 0xd || octect == 0xa || octect == 0x9);
-    }
+    private static byte[] decode(char[] base64Data, int numberQuadruple) {
+        // byte decodedData[] = null;
+        byte b1 = 0;
+        byte b2 = 0;
+        byte b3 = 0;
+        byte b4 = 0;
+        char d1 = 0;
+        char d2 = 0;
+        char d3 = 0;
+        char d4 = 0;
 
+        int idx = 0;
+        int encodedIndex = 0;
+        int dataIndex = 0;
+        byte[] decodedData = new byte[(numberQuadruple) * 3];
 
-    private static boolean isData(char octect) {
-        return (octect < BASELENGTH && BASE64_ALPHABET[octect] != -1);
+        for (; idx < numberQuadruple - 1; idx++) {
+            if (!isData((d1 = base64Data[dataIndex++])) || !isData((d2 = base64Data[dataIndex++]))
+                || !isData((d3 = base64Data[dataIndex++])) || !isData((d4 = base64Data[dataIndex++]))) {
+                return new byte[0];
+            } // if found "no data" just return null
+
+            b1 = BASE64_ALPHABET[d1];
+            b2 = BASE64_ALPHABET[d2];
+            b3 = BASE64_ALPHABET[d3];
+            b4 = BASE64_ALPHABET[d4];
+
+            decodedData[encodedIndex++] = (byte) (b1 << 2 | b2 >> 4);
+            decodedData[encodedIndex++] = (byte) (((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
+            decodedData[encodedIndex++] = (byte) (b3 << 6 | b4);
+        }
+
+        if (!isData((d1 = base64Data[dataIndex++])) || !isData((d2 = base64Data[dataIndex++]))) {
+            return new byte[0];// if found "no data" just return null
+        }
+
+        byte[] tmp = checkCharacters(base64Data, d1, d2, idx, encodedIndex, dataIndex, decodedData);
+        if (tmp != null) {
+            return tmp;
+        }
+        return decodedData;
     }
 
     private static byte[] checkCharacters(char[] base64Data, char d1, char d2, int idx, int encodedIndex, int dataIndex,
-            byte[] decodedData) {
+        byte[] decodedData) {
         byte b1;
         byte b2;
         char d3;
@@ -344,7 +301,25 @@ public class RSA {
         return isPad(d3) && isPad(d4);
     }
 
-    private static boolean isPad(char octect) {
-        return (octect == PAD);
+    /**
+     * remove WhiteSpace from MIME containing encoded Base64Hw data.
+     *
+     * @param data the byte array of base64 data (with WS)
+     * @return the new length
+     */
+    private static int removeWhiteSpace(char[] data) {
+        if (CommonUtil.isNull(data)) {
+            return 0;
+        }
+
+        // count characters that's not whitespace
+        int newSize = 0;
+        int len = data.length;
+        for (int i = 0; i < len; i++) {
+            if (!isWhiteSpace(data[i])) {
+                data[newSize++] = data[i];
+            }
+        }
+        return newSize;
     }
 }

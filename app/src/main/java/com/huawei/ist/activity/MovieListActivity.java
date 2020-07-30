@@ -1,17 +1,9 @@
 package com.huawei.ist.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -26,7 +18,6 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.huawei.hmf.tasks.OnFailureListener;
 import com.huawei.hmf.tasks.OnSuccessListener;
 import com.huawei.hms.location.FusedLocationProviderClient;
@@ -63,11 +54,11 @@ public class MovieListActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private SettingsClient settingsClient;
     LocationRequest mLocationRequest;
-    private TextView txtWelcomMsg,txtHeader;
-    private String movie_image ="poster";
-    private String movie_name= "movie";
-    private String movie_banner= "banner";
-    private String movie_director= "director";
+    private TextView txtWelcomMsg, txtHeader;
+    private String movie_image = "poster";
+    private String movie_name = "movie";
+    private String movie_banner = "banner";
+    private String movie_director = "director";
     private String movie_producer = "producer";
     private String movie_cast = "cast";
     private List<HashMap<String, Object>> movieFinalList = new ArrayList<HashMap<String, Object>>();
@@ -75,7 +66,8 @@ public class MovieListActivity extends AppCompatActivity {
     private static final String TAG = "TheaterActivity";
     private SearchService searchService;
     private List<String> theaterNameList = new ArrayList<>();
-    private double lat,lon;
+    private double lat, lon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,17 +76,17 @@ public class MovieListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_list);
         theaterNameList.clear();
         txtHeader = findViewById(R.id.txtHeader);
-        txtHeader.setTypeface(Constant.getTypeface(this,1));
+        txtHeader.setTypeface(Constant.getTypeface(this, 1));
         txtHeader.setText("MOVIES");
         listView = (ListView) findViewById(R.id.listviewMovies);
-        txtWelcomMsg = (TextView)findViewById(R.id.txtWelcomMsg);
+        txtWelcomMsg = (TextView) findViewById(R.id.txtWelcomMsg);
         txtWelcomMsg.setSelected(true);
         setCity();
         showMovieList();
         gettheaterList();
     }
 
-    private void setCity(){
+    private void setCity() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         settingsClient = LocationServices.getSettingsClient(this);
         mLocationRequest = new LocationRequest();
@@ -109,7 +101,7 @@ public class MovieListActivity extends AppCompatActivity {
                         System.out.println("CITY >>> " + hwLocation.getCity());
                         lat = hwLocation.getLatitude();
                         lon = hwLocation.getLongitude();
-                        txtWelcomMsg.setText("You are right now in " +hwLocation.getCity()+ " location. Grab a pop corn and book a movie because It's Show Time.");
+                        txtWelcomMsg.setText("You are right now in " + hwLocation.getCity() + " location. Grab a pop corn and book a movie because It's Show Time.");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -120,56 +112,55 @@ public class MovieListActivity extends AppCompatActivity {
                 });
     }
 
-    private void showMovieList(){
+    private void showMovieList() {
         movieFinalList.clear();
         movieFinalList.addAll(Utility.getMovieList());
-        final SimpleAdapter simAdapter = new SimpleAdapter(MovieListActivity.this, Utility.getMovieList() , R.layout.movie_item,
-                new String[]{movie_image, movie_name, movie_banner,movie_director,movie_producer,movie_cast}, new int[]{
-                R.id.poster, R.id.txtMovieName, R.id.txtMovieBanner,R.id.txtMovieDirector,R.id.txtMovieProducer,R.id.txtCasts})
-        {
+        final SimpleAdapter simAdapter = new SimpleAdapter(MovieListActivity.this, Utility.getMovieList(), R.layout.movie_item,
+                new String[]{movie_image, movie_name, movie_banner, movie_director, movie_producer, movie_cast}, new int[]{
+                R.id.poster, R.id.txtMovieName, R.id.txtMovieBanner, R.id.txtMovieDirector, R.id.txtMovieProducer, R.id.txtCasts}) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
-                for(int i=0;i<movieFinalList.size();i++) {
+                for (int i = 0; i < movieFinalList.size(); i++) {
 
-                        LayoutInflater vi = getLayoutInflater();
-                        view = vi.inflate(R.layout.movie_item, null);
-                        TextView txtMovieName = view.findViewById(R.id.txtMovieName);
-                        TextView txtMovieBanner = view.findViewById(R.id.txtMovieBanner);
-                        TextView txtMovieDirector = view.findViewById(R.id.txtMovieDirector);
-                        TextView txtMovieProducer = view.findViewById(R.id.txtMovieProducer);
-                        TextView txtMovieCast = view.findViewById(R.id.txtCasts);
-                        ImageView imgMoviePoster = view.findViewById(R.id.poster);
-                        Button btnBookTicket = view.findViewById(R.id.btnBookTicket);
-                        String movieName = "<b>Movie: </b> " + movieFinalList.get(position).get(movie_name).toString();
-                        String movieBanner = "<b>Banner: </b> " + movieFinalList.get(position).get(movie_banner).toString();
-                        String movieDirector = "<b>Director: </b> " + movieFinalList.get(position).get(movie_director).toString();
-                        String movieProducer = "<b>Producer: </b> " + movieFinalList.get(position).get(movie_producer).toString();
-                        String movieCast = "<b>Cast: </b> " + movieFinalList.get(position).get(movie_cast).toString();
+                    LayoutInflater vi = getLayoutInflater();
+                    view = vi.inflate(R.layout.movie_item, null);
+                    TextView txtMovieName = view.findViewById(R.id.txtMovieName);
+                    TextView txtMovieBanner = view.findViewById(R.id.txtMovieBanner);
+                    TextView txtMovieDirector = view.findViewById(R.id.txtMovieDirector);
+                    TextView txtMovieProducer = view.findViewById(R.id.txtMovieProducer);
+                    TextView txtMovieCast = view.findViewById(R.id.txtCasts);
+                    ImageView imgMoviePoster = view.findViewById(R.id.poster);
+                    Button btnBookTicket = view.findViewById(R.id.btnBookTicket);
+                    String movieName = "<b>Movie: </b> " + movieFinalList.get(position).get(movie_name).toString();
+                    String movieBanner = "<b>Banner: </b> " + movieFinalList.get(position).get(movie_banner).toString();
+                    String movieDirector = "<b>Director: </b> " + movieFinalList.get(position).get(movie_director).toString();
+                    String movieProducer = "<b>Producer: </b> " + movieFinalList.get(position).get(movie_producer).toString();
+                    String movieCast = "<b>Cast: </b> " + movieFinalList.get(position).get(movie_cast).toString();
 
-                        txtMovieName.setText(Html.fromHtml(movieName));
-                        txtMovieBanner.setText(Html.fromHtml(movieBanner));
-                        txtMovieDirector.setText(Html.fromHtml(movieDirector));
-                        txtMovieProducer.setText(Html.fromHtml(movieProducer));
-                        txtMovieCast.setText(Html.fromHtml(movieCast));
-                        if(movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster1")){
-                            imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster1));
-                        }else if(movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster2")){
-                            imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster2));
-                        }else if(movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster3")){
-                            imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster3));
-                        }else if(movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster4")){
-                            imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster4));
-                        }else if(movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster5")){
-                            imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster5));
-                        }
+                    txtMovieName.setText(Html.fromHtml(movieName));
+                    txtMovieBanner.setText(Html.fromHtml(movieBanner));
+                    txtMovieDirector.setText(Html.fromHtml(movieDirector));
+                    txtMovieProducer.setText(Html.fromHtml(movieProducer));
+                    txtMovieCast.setText(Html.fromHtml(movieCast));
+                    if (movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster1")) {
+                        imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster1));
+                    } else if (movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster2")) {
+                        imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster2));
+                    } else if (movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster3")) {
+                        imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster3));
+                    } else if (movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster4")) {
+                        imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster4));
+                    } else if (movieFinalList.get(position).get(movie_image).toString().equalsIgnoreCase("poster5")) {
+                        imgMoviePoster.setImageDrawable(getResources().getDrawable(R.drawable.poster5));
+                    }
 
-                    btnBookTicket.setTag(R.id.txtMovieName,movieFinalList.get(position).get(movie_name));
-                    btnBookTicket.setTag(R.id.txtMovieBanner,movieFinalList.get(position).get(movie_banner));
-                    btnBookTicket.setTag(R.id.txtMovieDirector,movieFinalList.get(position).get(movie_director));
-                    btnBookTicket.setTag(R.id.txtMovieProducer,movieFinalList.get(position).get(movie_producer));
-                    btnBookTicket.setTag(R.id.txtCasts,movieFinalList.get(position).get(movie_cast));
-                    btnBookTicket.setTag(R.id.poster,movieFinalList.get(position).get(movie_image));
+                    btnBookTicket.setTag(R.id.txtMovieName, movieFinalList.get(position).get(movie_name));
+                    btnBookTicket.setTag(R.id.txtMovieBanner, movieFinalList.get(position).get(movie_banner));
+                    btnBookTicket.setTag(R.id.txtMovieDirector, movieFinalList.get(position).get(movie_director));
+                    btnBookTicket.setTag(R.id.txtMovieProducer, movieFinalList.get(position).get(movie_producer));
+                    btnBookTicket.setTag(R.id.txtCasts, movieFinalList.get(position).get(movie_cast));
+                    btnBookTicket.setTag(R.id.poster, movieFinalList.get(position).get(movie_image));
 
                     btnBookTicket.setOnClickListener(bookTicket());
 
@@ -183,7 +174,7 @@ public class MovieListActivity extends AppCompatActivity {
         simAdapter.notifyDataSetChanged();
     }
 
-    private View.OnClickListener bookTicket(){
+    private View.OnClickListener bookTicket() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,17 +187,18 @@ public class MovieListActivity extends AppCompatActivity {
                 System.out.println("Movie Name >>>" + movieName);
                 Intent intent = new Intent(MovieListActivity.this, TheaterActivity.class);
                 Bundle args = new Bundle();
-                args.putSerializable("ARRAYLIST",(Serializable) theaterNameList);
-                intent.putExtra("BUNDLE",args);
+                args.putSerializable("ARRAYLIST", (Serializable) theaterNameList);
+                intent.putExtra("BUNDLE", args);
                 startActivity(intent);
 
             }
         };
     }
 
-    private void gettheaterList(){
+    private void gettheaterList() {
         try {
-            searchService = SearchServiceFactory.create(this, URLEncoder.encode("***************", "utf-8"));
+            //TODO Replace API_Key
+            searchService = SearchServiceFactory.create(this, URLEncoder.encode(Constant.API_KEY, "utf-8"));
         } catch (UnsupportedEncodingException e) {
             Log.e(TAG, "encode apikey error");
         }
@@ -244,6 +236,7 @@ public class MovieListActivity extends AppCompatActivity {
                 }
 
             }
+
             @Override
             public void onSearchError(SearchStatus status) {
                 Log.i("TAG", "Error : " + status.getErrorCode() + " " + status.getErrorMessage());

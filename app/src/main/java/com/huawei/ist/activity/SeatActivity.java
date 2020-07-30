@@ -2,6 +2,7 @@ package com.huawei.ist.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -23,21 +24,17 @@ import java.util.List;
 public class SeatActivity extends AppCompatActivity implements View.OnClickListener {
     ViewGroup layout;
 
-    String seats = "a_UUUUUUAAAAAUAUA_/"
+    String seats = "UUUUUUAAAAAUAUA_/"
             + "_________________/"
-            + "b_UU__AAAAAAAAA__UU/"
-            + "c_UU__UUUAAAAAA__AA/"
-            + "d_AA__AAAAAAAAA__AA/"
-            + "e_AA__AAAUUUUAA__AA/"
-            + "f_UU__UUUA_UUUU__AA/"
-            + "g_AA__AAAA_AAAA__UU/"
-            + "h_AA__AAUU_UUUU__UU/"
-            + "i_AA__UUAA_UUAA__AA/"
+            + "UU__AAAAAAAAA__UU/"
+            + "UU__UUUAAAAAA__AA/"
+            + "AA__AAAAAAAAA__AA/"
+            + "AA__AAAUUUUAA__AA/"
+            + "UU__UUUA_UUUU__AA/"
+            + "AA__AAAA_AAAA__UU/"
             + "_________________/"
-            + "j_UU_AAAAAAAUUUU_AA/"
-            + "k_UU_AAAAAAAAAAA_UU/"
-            + "l_AA_UUAAAAAUUUU_AA/"
-            + "o_AA_AAAAAAUUUUU_AA/"
+            + "UU_AAAAAAAUUUU_AA/"
+            + "UU_AAAAAAAAAAA_UU/"
             + "_________________/";
 
     List<TextView> seatViewList = new ArrayList<>();
@@ -48,6 +45,7 @@ public class SeatActivity extends AppCompatActivity implements View.OnClickListe
     int STATUS_BOOKED = 2;
     int STATUS_RESERVED = 3;
     String selectedIds = "";
+    int count = 0;
     private LinearLayout layoutSeat;
     private TextView txtHeader;
     @Override
@@ -155,12 +153,15 @@ public class SeatActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
+
         if ((int) view.getTag() == STATUS_AVAILABLE) {
             if (selectedIds.contains(view.getId() + ",")) {
                 selectedIds = selectedIds.replace(+view.getId() + ",", "");
                 view.setBackgroundResource(R.drawable.ic_seats_book);
+                count = count-1;
             } else {
                 selectedIds = selectedIds + view.getId() + ",";
+                count = count+1;
                 view.setBackgroundResource(R.drawable.ic_seats_selected);
             }
         } else if ((int) view.getTag() == STATUS_BOOKED) {
@@ -181,5 +182,17 @@ public class SeatActivity extends AppCompatActivity implements View.OnClickListe
         view.setText(alphabet);
         layout.addView(view);
         layoutSeat.addView(layout);
+    }
+    public void proceed(View view){
+       if (!selectedIds.isEmpty()){
+           Bundle bundle = new Bundle();
+           bundle.putString("seatIds",selectedIds);
+           Intent intent = new Intent(this,PaymentActivity.class);
+           intent.putExtras(bundle);
+           startActivity(intent);
+
+       }else {
+           Toast.makeText(this, "Please Select Seats", Toast.LENGTH_SHORT).show();
+       }
     }
 }
