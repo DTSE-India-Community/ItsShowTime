@@ -39,7 +39,7 @@ public class PaymentActivity extends FragmentActivity {
 
     private String seats;
     private String passObject = "";
-    private String issuerId = "APP_ID";
+    private String issuerId = "102594783";
     private String browserUrl = "https://walletpass-dra.cloud.huawei.com/walletkit/consumer";
     private TextView mMovieName,txtHeader;
     private TextView mMovieBanner;
@@ -115,19 +115,8 @@ public class PaymentActivity extends FragmentActivity {
             @Override
             public void onResponse(Call<Object> call, Response<Object> response) {
 
-
-
-//                passObject = new Gson().toJson(JSON.toJSONString(response.body()));
-//
-//                System.out.println("RESPONSE >>> " + passObject);
-//                if(passObject!=null) {
-//                    generateJWEStr();
-//                }
                 passObject = new Gson().toJson(JSON.toJSONString(response.body()));
-
-                    System.out.println("RESPONSE >>> " + passObject);
-
-
+                passObject = "{\"instanceIds\": [\""+response.body().toString().replace(".0","").trim()+"\"]}";
                 progressBar.setVisibility(View.GONE);
                 generateJWEStr();
 
@@ -141,6 +130,5 @@ public class PaymentActivity extends FragmentActivity {
                 progressBar.setVisibility(View.GONE);
             }
         });
-       // generateJWEStr();
     }
 }
